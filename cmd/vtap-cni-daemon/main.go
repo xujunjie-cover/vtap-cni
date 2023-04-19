@@ -10,10 +10,6 @@ import (
 	"k8s.io/sample-controller/pkg/signals"
 )
 
-const (
-	defaultSocketFileName = "vtap-cni.sock"
-)
-
 func main() {
 	config, err := config.ParseFlags()
 	if err != nil {
@@ -25,4 +21,7 @@ func main() {
 		klog.Fatalf("failed start the vtap cni listener: %v", err)
 		os.Exit(3)
 	}
+
+	<-stopCh
+	klog.Info("vtap-cni-daemon done.")
 }

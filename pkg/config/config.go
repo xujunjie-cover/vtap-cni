@@ -81,5 +81,11 @@ func (config *Configuration) initKubeClient() error {
 	// Set the config timeout to one minute.
 	cfg.Timeout = time.Minute
 
+	kubeClient, err := kubernetes.NewForConfig(cfg)
+	if err != nil {
+		klog.Errorf("init kubernetes client failed %v", err)
+		return err
+	}
+	config.KubeClient = kubeClient
 	return nil
 }

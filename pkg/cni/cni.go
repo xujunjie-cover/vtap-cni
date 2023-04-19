@@ -34,6 +34,7 @@ func CmdAdd(args *skel.CmdArgs) error {
 		ContainerID:     args.ContainerID,
 		DefaultMaster:   netConf.DefaultMaster,
 		IsMasterInNetNs: netConf.IsMasterInNetNs,
+		VtapType:        netConf.VtapType,
 		NetNs:           args.Netns,
 		IfName:          args.IfName,
 	})
@@ -82,6 +83,7 @@ type NetConf struct {
 	types.NetConf
 	ServerSocket    string `json:"server_socket"`
 	DefaultMaster   string `json:"default_master"`
+	VtapType        string `json:"vtap_type"`
 	MTU             int    `json:"mtu,omitempty"`
 	IsPromiscuous   bool   `json:"promiscMode,omitempty"`
 	IsMasterInNetNs bool   `json:"masterInNetNs,omitempty"`

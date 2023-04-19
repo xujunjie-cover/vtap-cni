@@ -29,6 +29,7 @@ type CniRequest struct {
 	ContainerID     string    `json:"container_id"`
 	NetNs           string    `json:"net_ns"`
 	IfName          string    `json:"if_name"`
+	Provider        string    `json:"provider"`
 	DefaultMaster   string    `json:"default_master"`
 	IsMasterInNetNs bool      `json:"is_master_in_netns"`
 	VtapType        string    `json:"vtap_type"`

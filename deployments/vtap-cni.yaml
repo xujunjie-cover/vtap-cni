@@ -1,0 +1,87 @@
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: vtap-cni
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - pods
+      - pods/status
+    verbs:
+      - get
+  - apiGroups:
+      - ""
+      - events.k8s.io
+    resources:
+      - events
+    verbs:
+      - create
+      - patch
+      - update
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: vtap-cni
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: vtap-cni
+subjects:
+- kind: ServiceAccount
+  name: vtap-cni
+  namespace: kube-system
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: vtap-cni
+  namespace: kube-system
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: vtap-cni
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      name: vtap-cni
+  template:
+    metadata:
+      labels:
+        name: vtap-cni
+    spec:
+      hostNetwork: true
+      hostPID: true
+      priorityClassName: system-node-critical
+      containers:
+      - name: vtap-cni
+        image: xujunjiecover/vtap-cni:latest
+        imagePullPolicy: Always
+        resources:
+          requests:
+            cpu: "60m"
+            memory: "30Mi"
+        securityContext:
+          privileged: true
+      initContainers:
+      - name: install-cni
+        command: ["cp", "/usr/src/vtap-cni", "/host/opt/cni/bin/vtap-cni"]
+        image: xujunjiecover/vtap-cni:latest
+        imagePullPolicy: Always
+        resources:
+          requests:
+            cpu: "10m"
+            memory: "15Mi"
+        securityContext:
+          privileged: true
+        volumeMounts:
+          - name: cni
+            mountPath: /host/opt/cni/bin
+            mountPropagation: Bidirectional
+      volumes:
+        - name: cni
+          hostPath:
+            path: /opt/cni/bin
